@@ -1,10 +1,14 @@
-/* 左側：スクロール専用設定 */
+/* 必要な辞書ファイルを読み込む */
+#include <dt-bindings/zmk/matrix_transform.h>
+#include <dt-bindings/zmk/mouse.h>
+#include <dt-bindings/zmk/input_transform.h>
+
 &spi0 {
     status = "okay";
 };
 
 &trackball {
     status = "okay";
-    /* ↓ これが動きをスクロールに変える魔法の呪文です */
+    /* スクロール機能の有効化 */
     input-processors = <&zip_xy_scaler 1 16>, <&zip_xy_to_scroll_mapper>;
 };
