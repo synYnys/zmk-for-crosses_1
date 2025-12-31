@@ -1,8 +1,10 @@
-/* 左側トラックボール有効化設定 */
+/* 左側：スクロール専用設定 */
 &spi0 {
     status = "okay";
 };
 
 &trackball {
     status = "okay";
+    /* ↓ これが動きをスクロールに変える魔法の呪文です */
+    input-processors = <&zip_xy_scaler 1 16>, <&zip_xy_to_scroll_mapper>;
 };
