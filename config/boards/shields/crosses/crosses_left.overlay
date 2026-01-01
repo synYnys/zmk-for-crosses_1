@@ -50,7 +50,8 @@
         compatible = "pixart,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        /* ↓ ここを修正しました！ irq-gpios -> motion-gpios */
+        motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         /* input-processors は一旦削除して、素の動きを確認します */
     };
 };
