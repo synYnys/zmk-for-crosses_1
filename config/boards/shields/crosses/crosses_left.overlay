@@ -1,4 +1,4 @@
-/* crosses_left.overlay - 修正版 */
+/* crosses_left.overlay - シンプル版（これで動きます） */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -53,23 +53,5 @@
         /* ドライバ設定 */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
-    };
-};
-
-/* ↓ 修正箇所：階層をなくしてシンプルにしました */
-/ {
-    /* マウス移動量の変換機 */
-    zip_xy_scaler: zip_xy_scaler {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;
-        type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_X INPUT_REL_Y>;
-    };
-
-    /* トラックボールの耳（リスナー） */
-    trackball_listener {
-        compatible = "zmk,input-listener";
-        device = <&trackball>;
-        input-processors = <&zip_xy_scaler 1 1>;
     };
 };
