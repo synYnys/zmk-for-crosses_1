@@ -9,18 +9,18 @@
 #include <dt-bindings/input/input-event-codes.h>
 
 / {
-    /* 1. 感度調整ツール（ここに codes を追加しました！） */
+    /* 1. 感度調整ツール */
     zip_xy_scaler: zip_xy_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
         type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_X INPUT_REL_Y>; /* ←この1行を追加！(XとYを調整すると明記) */
+        codes = <INPUT_REL_X INPUT_REL_Y>;
     };
 
-    /* 2. スクロール変換ツール */
+    /* 2. スクロール変換ツール（ここを修正！） */
     zip_xy_to_scroll_mapper: zip_xy_to_scroll_mapper {
         compatible = "zmk,input-processor-transform";
-        #input-processor-cells = <0>;
+        #input-processor-cells = <1>; /* ←ここを 0 から 1 に変更しました */
         type = <INPUT_EV_REL>;
         x-codes = <INPUT_REL_HWHEEL>;
         y-codes = <INPUT_REL_WHEEL>;
@@ -30,7 +30,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        input-processors = <&zip_xy_scaler 1 16>, <&zip_xy_to_scroll_mapper>;
+        /* ↓ zip_xy_to_scroll_mapper の後ろに「0」を追加しました */
+        input-processors = <&zip_xy_scaler 1 16>, <&zip_xy_to_scroll_mapper 0>;
     };
 };
 
