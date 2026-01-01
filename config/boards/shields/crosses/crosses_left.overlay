@@ -1,10 +1,9 @@
-/* crosses_left.overlay - 左手用スムース設定版 */
+/* crosses_left.overlay - エラー修正版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    /* 左手なのでここは 0 です */
     col-offset = <0>;
 };
 
@@ -52,9 +51,7 @@
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
-        
-        /* ▼▼▼ 左手も滑らかにします ▼▼▼ */
-        cpi = <1200>;
+        /* cpi設定は削除しました */
     };
 };
 
