@@ -58,7 +58,7 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* ↓ エラー回避のため、一旦プラスの「1」に戻します */
+        /* とりあえず動く「1」の設定 */
         input-processors = <&zip_xy_scaler 1 1>;
     };
 
