@@ -1,9 +1,7 @@
-/* crosses_left.overlay - 反転スイッチ版（計算式なし） */
+/* crosses_left.overlay - 安全復旧版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
-/* ↓ これを追加します（反転機能の呼び出し） */
-#include <dt-bindings/zmk/input_transform.h>
 
 &default_transform {
     col-offset = <0>;
@@ -60,18 +58,14 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        
-        /* ↓ ここで新しい「反転スイッチ」を使います */
-        input-processors = <&zip_xy_transform>;
+        /* ↓ エラー回避のため、一旦プラスの「1」に戻します */
+        input-processors = <&zip_xy_scaler 1 1>;
     };
 
-    /* 計算機（scaler）ではなく、変換機（transform）を定義 */
-    zip_xy_transform: zip_xy_transform {
-        compatible = "zmk,input-processor-transform";
-        #input-processor-cells = <0>;
+    zip_xy_scaler: zip_xy_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
         type = <INPUT_EV_REL>;
-        
-        /* ↓ これが魔法の言葉です。数字を使わずX軸を反転します */
-        x-invert;
+        codes = <INPUT_REL_X INPUT_REL_Y>;
     };
 };
