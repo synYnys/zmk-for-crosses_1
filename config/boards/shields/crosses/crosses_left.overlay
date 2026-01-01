@@ -1,4 +1,4 @@
-/* crosses_left.overlay */
+/* crosses_left.overlay - 最終完成形 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -48,11 +48,34 @@
         compatible = "pixart,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-
-        /* 最新の書き方に修正済み */
+        
+        /* 軸の設定 */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
+    };
+};
+
+/* ↓ ここが【最重要】です！これを追加しないと動きません */
+/ {
+    /* 入力をマウスの動きに変換する設定 */
+    input_processors {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+        
+        /* ここで感度を調整できます（デフォルト1倍） */
+        zip_xy_scaler: zip_xy_scaler {
+            type = <INPUT_EV_REL>;
+            codes = <INPUT_REL_X INPUT_REL_Y>;
+        };
+    };
+
+    /* トラックボールの耳（リスナー） */
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
+        
+        /* 上で作った変換設定をここに適用します */
+        input-processors = <&zip_xy_scaler 1 1>;
     };
 };
