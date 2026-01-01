@@ -1,4 +1,4 @@
-/* crosses_left.overlay - 復活・安全版 */
+/* crosses_left.overlay - 今度こそ反転・エラー回避版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -58,8 +58,9 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* ↓ 一旦プラスの「1」に戻します。これで絶対に動きます */
-        input-processors = <&zip_xy_scaler 1 1>;
+        
+        /* ↓ 修正箇所：(-1) の代わりに 0xffffffff を使用（これでエラー回避！） */
+        input-processors = <&zip_xy_scaler 0xffffffff 1>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
