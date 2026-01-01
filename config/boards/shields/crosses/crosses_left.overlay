@@ -1,4 +1,4 @@
-/* crosses_left.overlay - 原点回帰版 */
+/* crosses_left.overlay - 最終完成版（反転スイッチ使用） */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -54,18 +54,18 @@
     };
 };
 
+/* ↓ ここが新しい反転設定です（計算式を使わないのでエラーになりません） */
 / {
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* ↓ とりあえずプラスの「1」に戻します。これで絶対動きます */
-        input-processors = <&zip_xy_scaler 1 1>;
+        input-processors = <&zip_xy_transform>;
     };
 
-    zip_xy_scaler: zip_xy_scaler {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;
+    zip_xy_transform: zip_xy_transform {
+        compatible = "zmk,input-processor-transform";
+        #input-processor-cells = <0>;
         type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_X INPUT_REL_Y>;
+        x-invert; /* ← これでX軸（横）を反転します */
     };
 };
