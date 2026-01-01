@@ -9,11 +9,12 @@
 #include <dt-bindings/input/input-event-codes.h>
 
 / {
-    /* 1. 感度調整ツール（ここを修正しました！） */
+    /* 1. 感度調整ツール（ここに codes を追加しました！） */
     zip_xy_scaler: zip_xy_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
-        type = <INPUT_EV_REL>; /* ←この1行が足りませんでした！ */
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_X INPUT_REL_Y>; /* ←この1行を追加！(XとYを調整すると明記) */
     };
 
     /* 2. スクロール変換ツール */
