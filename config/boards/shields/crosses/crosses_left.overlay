@@ -1,9 +1,10 @@
+/* crosses_right.overlay - 左手書き込み用（反転修正版） */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <0>;
+    col-offset = <0>; // 左手用のキー位置
 };
 
 &kscan0 {
@@ -57,8 +58,9 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* ここで滑らかさを調整（4 4 にすると4倍速く滑らかになります） */
-        input-processors = <&zip_xy_scaler 4 4>;
+        /* ▼左手だけ逆に動くのを直す設定▼ */
+        /* 数値の「2」は感度です。マイナスを付けて反転させます */
+        input-processors = <&zip_xy_scaler -2 -2>; 
     };
 
     zip_xy_scaler: zip_xy_scaler {
