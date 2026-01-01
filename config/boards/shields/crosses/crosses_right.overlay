@@ -4,11 +4,10 @@
  */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
-/* ↓これ重要 */
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <5>;  /* ← 右手用はここが「5」です */
+    col-offset = <5>;
 }; 
 
 &kscan0 {
@@ -57,7 +56,7 @@
         /* 割り込みピン */
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         
-        /* ↓ ここも左手と同じ記述が必要です！ */
+        /* 軸の設定 */
         zephyr,axis-x {
             input-codes = <INPUT_REL_X>;
         };
