@@ -1,13 +1,11 @@
-/* crosses_left.overlay - システムを騙して右手の設定で動かします */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <0>; /* 左手側のキー配置 */
+    col-offset = <0>;
 };
 
-/* ↓ ここから下は、あなたが「動いた」と言った右手の内容を完全に1文字も変えずに貼ります */
 &kscan0 {
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -59,7 +57,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        input-processors = <&zip_xy_scaler 1 1>;
+        /* 感度を 4倍(-4) にして「スルスル」動くようにします */
+        input-processors = <&zip_xy_scaler -4 -4>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
