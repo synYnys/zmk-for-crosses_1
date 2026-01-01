@@ -1,9 +1,10 @@
-/* crosses_left.overlay - 最終完成版（反転スイッチ使用） */
+/* crosses_left.overlay - 「動いた右手用ファイル」をベースにした左手版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
+    /* ここだけ「0」にします（右手は5でした）。他は全部右と同じです */
     col-offset = <0>;
 };
 
@@ -54,18 +55,18 @@
     };
 };
 
-/* ↓ ここが新しい反転設定です（計算式を使わないのでエラーになりません） */
 / {
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        input-processors = <&zip_xy_transform>;
+        /* 右手で動いた設定そのまま (1, 1) です */
+        input-processors = <&zip_xy_scaler 1 1>;
     };
 
-    zip_xy_transform: zip_xy_transform {
-        compatible = "zmk,input-processor-transform";
-        #input-processor-cells = <0>;
+    zip_xy_scaler: zip_xy_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
         type = <INPUT_EV_REL>;
-        x-invert; /* ← これでX軸（横）を反転します */
+        codes = <INPUT_REL_X INPUT_REL_Y>;
     };
 };
