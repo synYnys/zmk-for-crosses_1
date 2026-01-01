@@ -8,7 +8,7 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <5>;
+    col-offset = <5>;  /* ← 右手用はここが「5」です */
 }; 
 
 &kscan0 {
@@ -21,8 +21,6 @@
         ;
 };
 
-
-// trackball bus
 &pinctrl {
     spi0_default: spi0_default {
         group1 {
@@ -59,7 +57,7 @@
         /* 割り込みピン */
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         
-        /* ↓ ここが重要！必ず trackball@0 のカッコの内側に書く */
+        /* ↓ ここも左手と同じ記述が必要です！ */
         zephyr,axis-x {
             input-codes = <INPUT_REL_X>;
         };
