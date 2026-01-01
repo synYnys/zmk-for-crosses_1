@@ -3,7 +3,7 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <5>; /* 右手用 */
+    col-offset = <5>; /* ここで右手のキー配置を指定 */
 };
 
 &kscan0 {
@@ -57,8 +57,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 右手も滑らかに設定 */
-        input-processors = <&zip_xy_scaler -4 -4>;
+        /* 右手も滑らかさを4倍にアップ */
+        input-processors = <&zip_xy_scaler 4 4>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
