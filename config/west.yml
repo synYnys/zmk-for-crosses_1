@@ -2,16 +2,11 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-    - name: weteor    # 新しい提供者（weteorさん）を追加
-      url-base: https://github.com/weteor
   projects:
     - name: zmk
       remote: zmkfirmware
       revision: main
       import: app/west.yml
-    - name: zmk-pmw3610-driver
-      remote: weteor  # inorichi ではなく weteor を指定
-      revision: main
       
   self:
     path: config
