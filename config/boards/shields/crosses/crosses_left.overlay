@@ -1,4 +1,4 @@
-/* crosses_left.overlay - プロセッサーあり（動く版） */
+/* crosses_left.overlay - 動作確認済み完全版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -49,14 +49,12 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-
-        /* ドライバ設定 */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
     };
 };
 
-/* マウス移動量の変換機（これが必要！） */
+/* 以下の記述でトラックボールの信号をマウス移動に変換します */
 / {
     trackball_listener {
         compatible = "zmk,input-listener";
