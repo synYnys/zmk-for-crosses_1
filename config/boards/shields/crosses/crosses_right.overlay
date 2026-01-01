@@ -11,14 +11,13 @@
 }; 
 
 &kscan0 {
-	col-gpios
-		= <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-		, <&gpio1 13 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-		, <&gpio0 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-		, <&gpio0 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-		, <&gpio1 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-		
-		;
+    col-gpios
+        = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+        , <&gpio1 13 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+        , <&gpio0 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+        , <&gpio0 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+        , <&gpio1 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+        ;
 };
 
 
@@ -55,22 +54,22 @@
         compatible = "pixart,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        scroll-layers = <1>;
-        //snipe-layers = <2>;
-      // automouse-layer = <3>;
+        /* 修正1: irq-gpios を motion-gpios に変更 */
+        motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        
+        /* 修正2: 古いドライバ専用の機能は一旦コメントアウトして、ビルドを通すことを優先します */
+        // scroll-layers = <1>;
+        // snipe-layers = <2>;
+        // automouse-layer = <3>;
     };
 };
 
-
-
-
-
+/* 修正3: input-listener も古い機能なので削除（コメントアウト）します */
+/*
 / {
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
     };
 };
-
-
+*/
