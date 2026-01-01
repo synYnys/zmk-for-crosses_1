@@ -12,7 +12,7 @@
     col-offset = <0>;
 };
 
-/* キーボードの配線設定（右手と同じ定義を使います） */
+/* キーボードの配線設定（右手と同じ） */
 &kscan0 {
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -23,7 +23,7 @@
         ;
 };
 
-/* トラックボールの通信設定（これも右手の情報を移植） */
+/* トラックボールの通信設定 */
 &pinctrl {
     spi0_default: spi0_default {
         group1 {
