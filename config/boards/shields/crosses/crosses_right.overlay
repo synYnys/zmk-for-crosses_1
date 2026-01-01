@@ -3,7 +3,7 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <0>; /* 左手用のキー配置 */
+    col-offset = <0>;
 };
 
 &kscan0 {
@@ -57,8 +57,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* Bluetoothの負荷を下げるため 1 1 にし、逆の動きを直すためにマイナスを付けます */
-        input-processors = <&zip_xy_scaler (-1) (-1)>;
+        /* 逆に動くのを直すため 1 1 に戻しました */
+        input-processors = <&zip_xy_scaler 1 1>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
