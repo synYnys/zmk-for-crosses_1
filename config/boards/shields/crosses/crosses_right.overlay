@@ -48,9 +48,7 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        /* ▼ ここで「逆」を直しています。XとYにマイナスを強制適用 ▼ */
-        zephyr,axis-x = <INPUT_REL_X>;
-        zephyr,axis-y = <INPUT_REL_Y>;
+        /* ここで向きを修正 */
         invert-x;
         invert-y;
     };
@@ -60,14 +58,5 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* Bluetoothの負荷を最小にするため 1 1 に固定 */
-        input-processors = <&zip_xy_scaler 1 1>;
-    };
-
-    zip_xy_scaler: zip_xy_scaler {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;
-        type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_X INPUT_REL_Y>;
     };
 };
