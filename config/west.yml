@@ -11,9 +11,10 @@ manifest:
       import: app/west.yml
     - name: zmk-pmw3610-driver
       remote: inorichi
-      # 2023年1月のコミットです。
-      # 余計な機能がないため、ZMK v0.3 と確実に動きます。
-      revision: 32a9394 
+      # 2023年1月時点のコミットです。
+      # 余計な機能（スクロールやレイヤー判定）が入っていないため、
+      # 古いZMKとも確実に動くはずです。
+      revision: 32a9394
       
   self:
     path: config
