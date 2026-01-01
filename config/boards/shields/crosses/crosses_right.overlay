@@ -1,13 +1,15 @@
-/* crosses_right.overlay - 確実にビルドが通るスムース版 */
+/* crosses_right.overlay - 右手ファイルの名前のまま、左手として動かす */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <5>;
+    /* 5（右）ではなく 0（左）にします */
+    col-offset = <0>;
 };
 
 &kscan0 {
+    /* ここは左手・右手共通のピン設定です */
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
         , <&gpio1 13 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -17,6 +19,7 @@
         ;
 };
 
+/* SPI通信設定（ここが右手の成功の鍵です） */
 &pinctrl {
     spi0_default: spi0_default {
         group1 {
@@ -58,8 +61,7 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* ↓ 右も感度を上げます */
-        input-processors = <&zip_xy_scaler 2 1>;
+        input-processors = <&zip_xy_scaler 1 1>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
