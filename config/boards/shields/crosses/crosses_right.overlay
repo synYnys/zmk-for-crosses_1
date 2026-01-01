@@ -1,11 +1,9 @@
-/* crosses_right.overlay - 左手で使用するための最終調整版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    /* 左手のキー位置に固定 */
-    col-offset = <0>;
+    col-offset = <5>; /* 右手用 */
 };
 
 &kscan0 {
@@ -59,11 +57,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 【反転と滑らかさの調整】 */
-        /* 第一引数(2): 左右の感度（2倍にして滑らかに） */
-        /* 第二引数(2): 上下の感度（2倍にして滑らかに） */
-        /* 両方にマイナスを付けて反転を直します */
-        input-processors = <&zip_xy_scaler -2 -2>;
+        /* 右手も滑らかに設定 */
+        input-processors = <&zip_xy_scaler -4 -4>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
