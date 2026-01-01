@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2020 ZMK Contributors
- *
  * SPDX-License-Identifier: MIT
  */
  
 #include "crosses.dtsi"
+/* ↓【追加1】この行が必要です！ */
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
     col-offset = <5>;
@@ -54,22 +55,15 @@
         compatible = "pixart,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        /* 修正1: irq-gpios を motion-gpios に変更 */
+        /* 割り込みピン */
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         
-        /* 修正2: 古いドライバ専用の機能は一旦コメントアウトして、ビルドを通すことを優先します */
-        // scroll-layers = <1>;
-        // snipe-layers = <2>;
-        // automouse-layer = <3>;
+        /* ↓【追加2】ここが今回のエラー修正のキモです！ */
+        zephyr,axis-x {
+            input-codes = <INPUT_REL_X>;
+        };
+        zephyr,axis-y {
+            input-codes = <INPUT_REL_Y>;
+        };
     };
 };
-
-/* 修正3: input-listener も古い機能なので削除（コメントアウト）します */
-/*
-/ {
-    trackball_listener {
-        compatible = "zmk,input-listener";
-        device = <&trackball>;
-    };
-};
-*/
