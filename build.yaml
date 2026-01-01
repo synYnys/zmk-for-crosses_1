@@ -13,9 +13,7 @@
 #
 ---
 include:
-  - board: nice_nano_v2
+  - board: nice_nano       # _v2 を消す
     shield: crosses_left
-  - board: nice_nano_v2
+  - board: nice_nano       # _v2 を消す
     shield: crosses_right
-  - board: nice_nano_v2
-    shield: settings_reset
