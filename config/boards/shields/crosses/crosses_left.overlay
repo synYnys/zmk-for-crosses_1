@@ -57,8 +57,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 感度を 4倍(-4) にして「スルスル」動くようにします */
-        input-processors = <&zip_xy_scaler -4 -4>;
+        /* ここで滑らかさを調整（4 4 にすると4倍速く滑らかになります） */
+        input-processors = <&zip_xy_scaler 4 4>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
