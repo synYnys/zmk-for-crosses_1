@@ -1,8 +1,9 @@
-/* crosses_left.overlay - 動作確認済み完全版 */
+/* crosses_left.overlay - 左右反転修正版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
+/* 左手用の位置設定 */
 &default_transform {
     col-offset = <0>;
 };
@@ -54,12 +55,13 @@
     };
 };
 
-/* 以下の記述でトラックボールの信号をマウス移動に変換します */
 / {
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        input-processors = <&zip_xy_scaler 1 1>;
+        
+        /* ↓ 修正箇所：最初の「1」を「-1」に変えました（X軸反転） */
+        input-processors = <&zip_xy_scaler -1 1>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
