@@ -1,4 +1,4 @@
-/* crosses_left.overlay - 安全復旧版 */
+/* crosses_left.overlay - 原点回帰版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -58,7 +58,7 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* とりあえず動く「1」の設定 */
+        /* ↓ とりあえずプラスの「1」に戻します。これで絶対動きます */
         input-processors = <&zip_xy_scaler 1 1>;
     };
 
