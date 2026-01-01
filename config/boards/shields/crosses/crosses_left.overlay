@@ -1,13 +1,14 @@
-/* crosses_left.overlay - 「動いた右手用ファイル」をベースにした左手版 */
+/* crosses_left.overlay - 右手の完全動作版を左手用に修正したもの */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    /* ここだけ「0」にします（右手は5でした）。他は全部右と同じです */
+    /* ▼▼▼ ここだけ変えました（右手は5、左手は0） ▼▼▼ */
     col-offset = <0>;
 };
 
+/* ↓ 以下はいただいた「動くコード」と全く同じです（絶対にいじらない） */
 &kscan0 {
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -59,7 +60,7 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 右手で動いた設定そのまま (1, 1) です */
+        /* 右手と同じ <1 1> なのでエラーは起きません */
         input-processors = <&zip_xy_scaler 1 1>;
     };
 
