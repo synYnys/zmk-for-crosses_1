@@ -1,14 +1,12 @@
-/* crosses_left.overlay - 右手の完全動作版を左手用に修正したもの */
+/* crosses_left.overlay - 右手版の完全移植（設定漏れ防止） */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    /* ▼▼▼ ここだけ変えました（右手は5、左手は0） ▼▼▼ */
     col-offset = <0>;
 };
 
-/* ↓ 以下はいただいた「動くコード」と全く同じです（絶対にいじらない） */
 &kscan0 {
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -60,7 +58,6 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 右手と同じ <1 1> なのでエラーは起きません */
         input-processors = <&zip_xy_scaler 1 1>;
     };
 
