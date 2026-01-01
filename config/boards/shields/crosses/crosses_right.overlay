@@ -1,4 +1,4 @@
-/* crosses_right.overlay - エラー修正版 */
+/* crosses_right.overlay - 確実にビルドが通るスムース版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -51,7 +51,6 @@
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
-        /* cpi設定は削除しました */
     };
 };
 
@@ -59,7 +58,8 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        input-processors = <&zip_xy_scaler 1 1>;
+        /* ↓ 右も感度を上げます */
+        input-processors = <&zip_xy_scaler 2 1>;
     };
 
     zip_xy_scaler: zip_xy_scaler {
