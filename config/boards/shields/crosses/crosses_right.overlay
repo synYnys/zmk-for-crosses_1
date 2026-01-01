@@ -1,4 +1,4 @@
-/* crosses_right.overlay - 感度アップ（スムース化）版 */
+/* crosses_right.overlay - エラー修正版 */
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -51,11 +51,7 @@
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
-        
-        /* ▼▼▼ ここで滑らかさを調整します ▼▼▼ */
-        /* 数値が大きいほど敏感で滑らかになります（標準は600くらい） */
-        /* 早すぎる場合は 800 くらいに下げてください */
-        cpi = <1200>;
+        /* cpi設定は削除しました */
     };
 };
 
@@ -63,8 +59,6 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 自動加速（スクロールのような快適さ）を入れたい場合はここを変えますが */
-        /* まずは標準の <1 1> で、CPIだけで滑らかさを出します */
         input-processors = <&zip_xy_scaler 1 1>;
     };
 
