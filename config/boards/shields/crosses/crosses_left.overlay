@@ -6,13 +6,33 @@
 #include "crosses.dtsi"
 #include <dt-bindings/zmk/mouse.h>
 #include <dt-bindings/zmk/input_transform.h>
+/* ↓ スクロールイベントのコードを使うために必要 */
+#include <dt-bindings/input/input-event-codes.h>
 
-/* 左手側なので、オフセットは0にします */
+/* * 【ここが修正ポイント！】
+ * スクロール機能に必要な「道具」がなかったので、ここで手作りします。
+ */
+/ {
+    /* 動きの感度を調整する道具 */
+    zip_xy_scaler: zip_xy_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+    };
+
+    /* 動きをスクロール信号に変換する道具 */
+    zip_xy_to_scroll_mapper: zip_xy_to_scroll_mapper {
+        compatible = "zmk,input-processor-transform";
+        #input-processor-cells = <0>;
+        type = <INPUT_EV_REL>;
+        x-codes = <INPUT_REL_HWHEEL>; /* 横スクロール */
+        y-codes = <INPUT_REL_WHEEL>;  /* 縦スクロール */
+    };
+};
+
 &default_transform {
     col-offset = <0>;
 };
 
-/* キーボードの配線設定（右手と同じ） */
 &kscan0 {
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -23,7 +43,6 @@
         ;
 };
 
-/* トラックボールの通信設定 */
 &pinctrl {
     spi0_default: spi0_default {
         group1 {
@@ -58,7 +77,7 @@
         spi-max-frequency = <2000000>;
         irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         
-        /* ここで「動き」を「スクロール」に変換します！ */
+        /* さっき作った道具を使ってスクロール化！ */
         input-processors = <&zip_xy_scaler 1 16>, <&zip_xy_to_scroll_mapper>;
     };
 };
