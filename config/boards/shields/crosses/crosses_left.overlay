@@ -16,8 +16,6 @@
         ;
 };
 
-/* ▼ ここから下を追加しました（右手の設定と同じです） ▼ */
-
 &pinctrl {
     spi0_default: spi0_default {
         group1 {
