@@ -1,4 +1,4 @@
-# 1. 名前と分割設定（ここは共通）
+# 1. 共通設定
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_KEYBOARD_NAME
         default "ZMK-New"
@@ -7,28 +7,27 @@ if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
         default y
 endif
 
-# 2. 左手（子機：Peripheral）専用の設定
-if SHIELD_CROSSES_LEFT
-    # 親（主）になる機能を完全にOFFにする
-    config ZMK_SPLIT_BLE_ROLE_CENTRAL
-        default n
-
-    # 子機のマウスデータを親に飛ばすスイッチ（文法エラーを修正）
-    config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-        bool
-        default y
-endif
-
-# 3. 右手（親機：Central）専用の設定
-if SHIELD_CROSSES_RIGHT
-    # 唯一の親（主）として振る舞う
-    config ZMK_SPLIT_BLE_ROLE_CENTRAL
-        default y
-endif
-
-# 4. マウス機能自体は全体で有効化
+# 2. 全体でマウス機能を有効化（ここをシンプルにする）
 config ZMK_MOUSE
     default y
 
 config ZMK_POINTING
     default y
+
+# 3. 左手（従 / 子）の設定
+if SHIELD_CROSSES_LEFT
+    # 親（主）になる機能を無効化
+    config ZMK_SPLIT_BLE_ROLE_CENTRAL
+        default n
+
+    # 子機のマウスデータを親に送る「既存のスイッチ」をONにする
+    config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
+        default y
+endif
+
+# 4. 右手（主 / 親）の設定
+if SHIELD_CROSSES_RIGHT
+    # 右手を唯一の親（主）にする
+    config ZMK_SPLIT_BLE_ROLE_CENTRAL
+        default y
+endif
