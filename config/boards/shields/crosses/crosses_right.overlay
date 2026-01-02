@@ -1,5 +1,5 @@
 #include "crosses.dtsi"
-/* ↓ これがないと動きません（さっきのミスはここです） */
+#include <dt-bindings/zmk/mouse.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
@@ -49,12 +49,15 @@
         spi-max-frequency = <2000000>;
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 
-        /* ▼ 逆回転を直す設定（これを追加しました） ▼ */
-        invert-x;
-        invert-y;
-
-        /* ▼ これも必要です ▼ */
+        /* ▼ 動作を止める原因になった行を削除しました ▼ */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
+    };
+};
+
+/ {
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
     };
 };
