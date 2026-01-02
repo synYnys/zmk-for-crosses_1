@@ -59,8 +59,5 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        
-        /* 【重要】ここで「マウスのXY移動」としてデータを確定させる */
-        input-processors = <&zip_xy_scaler 1 1>;
     };
 };
