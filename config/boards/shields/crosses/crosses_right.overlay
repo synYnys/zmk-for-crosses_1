@@ -1,4 +1,6 @@
 #include "crosses.dtsi"
+/* ↓ これがないと動きません（さっきのミスはここです） */
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
     col-offset = <5>;
@@ -47,7 +49,11 @@
         spi-max-frequency = <2000000>;
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 
-        /* ▼ ここは標準のまま（反転なし）にします ▼ */
+        /* ▼ 逆回転を直す設定（これを追加しました） ▼ */
+        invert-x;
+        invert-y;
+
+        /* ▼ これも必要です ▼ */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
     };
