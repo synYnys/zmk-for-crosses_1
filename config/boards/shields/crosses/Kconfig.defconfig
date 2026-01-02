@@ -7,27 +7,28 @@ if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
         default y
 endif
 
-# 2. 全体でマウス機能を有効化（ここをシンプルにする）
+# 2. 全体でマウス機能を有効化
 config ZMK_MOUSE
     default y
 
 config ZMK_POINTING
     default y
 
-# 3. 左手（従 / 子）の設定
+# 3. 左手（従 / 子機）の設定
 if SHIELD_CROSSES_LEFT
     # 親（主）になる機能を無効化
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default n
 
-    # 子機のマウスデータを親に送る「既存のスイッチ」をONにする
+    # 【重要】エラー解消：bool 型を明示して定義する
+    # これで「従」の状態でもマウスデータを「主」に送るようになります
     config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
+        bool
         default y
 endif
 
-# 4. 右手（主 / 親）の設定
+# 4. 右手（主 / 親機）の設定
 if SHIELD_CROSSES_RIGHT
-    # 右手を唯一の親（主）にする
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default y
 endif
