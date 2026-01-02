@@ -61,3 +61,11 @@
         device = <&trackball>;
     };
 };
+
+/ {
+    /* 子機(Peripheral)側でトラックボールの動きをキャッチして無線に流す設定 */
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
+    };
+};
