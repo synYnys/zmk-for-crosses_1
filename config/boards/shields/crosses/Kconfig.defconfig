@@ -6,4 +6,11 @@ config ZMK_KEYBOARD_NAME
 config ZMK_SPLIT
 	default y
 
+# 左手のボールを動かすために必須の設定
+config ZMK_MOUSE
+	default y
+
+config ZMK_POINTING
+	default y
+
 endif
