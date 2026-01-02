@@ -49,8 +49,11 @@
         spi-max-frequency = <2000000>;
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 
-        zephyr,axis-x = <INPUT_REL_X>;
-        zephyr,axis-y = <INPUT_REL_Y>;
+        /* ▼ ここで方向を修正します ▼ */
+        /* もし「上下が逆」なら INPUT_REL_Y をマイナス方向にしたり、XとYを入れ替えます */
+        zephyr,axis-x = <INPUT_REL_Y>; 
+        zephyr,axis-y = <INPUT_REL_X>;
+        /* ▲ 右手を親機にした際のズレを解消 ▲ */
     };
 };
 
