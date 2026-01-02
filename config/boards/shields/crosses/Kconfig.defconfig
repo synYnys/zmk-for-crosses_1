@@ -1,11 +1,11 @@
-# ▼ ここを RIGHT から LEFT に変えました！
+# LEFT のところを n (オフ) に書き換えてください
 if SHIELD_CROSSES_LEFT
 
 config ZMK_KEYBOARD_NAME
-	default "Crosses"
+	default "ZMK-New"
 
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
-	default y
+	default n
 
 endif
 
