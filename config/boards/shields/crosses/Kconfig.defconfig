@@ -1,11 +1,16 @@
-# 1. 何よりも先に「このキーボードはマウスである」とシステム全体に教え込む
+# 1. システム全体でマウス機能を強制
 config ZMK_MOUSE
 	default y
 
 config ZMK_POINTING
 	default y
 
-# 2. その上で左右共通の設定を書く
+# 2. 【これが抜けていました】子が拾ったマウスデータを「親（主）」に転送する設定
+# これを足さないと、子が「子」である限りデータは右手に飛びません
+config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
+	default y
+
+# 3. その上で左右共通の設定
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
 
 config ZMK_KEYBOARD_NAME
@@ -16,13 +21,13 @@ config ZMK_SPLIT
 
 endif
 
-# 3. 左手は「子」として固定（これでBluetoothは1つになる）
+# 4. 左手は「子」として固定
 if SHIELD_CROSSES_LEFT
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
 	default n
 endif
 
-# 4. 右手は「親」として固定
+# 5. 右手は「親」として固定
 if SHIELD_CROSSES_RIGHT
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
 	default y
