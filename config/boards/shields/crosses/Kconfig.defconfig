@@ -1,12 +1,31 @@
-if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
+# 右手 (RIGHT) を親機として定義し、センサーを有効にする
+if SHIELD_CROSSES_RIGHT
 
 config ZMK_KEYBOARD_NAME
 	default "ZMK-New"
 
+config ZMK_SPLIT_BLE_ROLE_CENTRAL
+	default y
+
+endif
+
+# 左手 (LEFT) は名前だけを定義し、親機 (CENTRAL) にはしない
+if SHIELD_CROSSES_LEFT
+
+config ZMK_KEYBOARD_NAME
+	default "ZMK-New"
+
+config ZMK_SPLIT_BLE_ROLE_CENTRAL
+	default n
+
+endif
+
+# 共通設定
+if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
+
 config ZMK_SPLIT
 	default y
 
-# 左手のボールを動かすために必須の設定
 config ZMK_MOUSE
 	default y
 
