@@ -2,13 +2,10 @@
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_KEYBOARD_NAME
         default "ZMK-New"
-
     config ZMK_SPLIT
         default y
-
     config ZMK_MOUSE
         default y
-
     config ZMK_POINTING
         default y
 endif
@@ -18,8 +15,17 @@ if SHIELD_CROSSES_LEFT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default n
 endif
-
 if SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default y
 endif
+
+# 3. エラー解消の鍵：ここで「型」を定義する
+# これがないと .conf ファイルで設定しても無視されてしまいます
+config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
+    bool
+    default n
+
+config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
+    int
+    default 60
