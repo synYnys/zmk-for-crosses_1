@@ -1,22 +1,22 @@
+# 1. 共通設定（名前とスプリット設定）
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
+    config ZMK_KEYBOARD_NAME
+        default "ZMK-New"
 
-config ZMK_KEYBOARD_NAME
-	default "ZMK-New"
+    config ZMK_SPLIT
+        default y
+endif
 
-config ZMK_SPLIT
-	default y
+# 2. 右手を親機にする設定
+if SHIELD_CROSSES_RIGHT
+    config ZMK_SPLIT_BLE_ROLE_CENTRAL
+        default y
+endif
 
-# 左右共通でマウス機能を有効化
+# 3. 【重要】ここをブロックの外に出す
+# 子機（左手）であっても、自分自身のセンサーを「常に」動かすための設定
 config ZMK_MOUSE
-	default y
+    default y
 
 config ZMK_POINTING
-	default y
-
-endif
-
-# 右手だけをリーダーとして明示（左手側の n 設定は削除してください）
-if SHIELD_CROSSES_RIGHT
-config ZMK_SPLIT_BLE_ROLE_CENTRAL
-	default y
-endif
+    default y
