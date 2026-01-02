@@ -3,9 +3,10 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
-    col-offset = <0>;
+    col-offset = <0>; /* 左手のキー配置 */
 };
 
+/* 左手の配線設定 */
 &kscan0 {
     col-gpios
         = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -16,24 +17,7 @@
         ;
 };
 
-&pinctrl {
-    spi0_default: spi0_default {
-        group1 {
-            psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
-                <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-                <NRF_PSEL(SPIM_MISO, 0, 20)>;
-        };
-    };
-    spi0_sleep: spi0_sleep {
-        group1 {
-            psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
-                <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-                <NRF_PSEL(SPIM_MISO, 0, 20)>;
-            low-power-enable;
-        };
-    };
-};
-
+/* トラックボールを左手でも有効にする記述 */
 &spi0 {
     status = "okay";
     compatible = "nordic,nrf-spim";
@@ -57,14 +41,5 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* 左手用として標準的な感度（反転なし）に設定 */
-        input-processors = <&zip_xy_scaler 2 2>;
-    };
-
-    zip_xy_scaler: zip_xy_scaler {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;
-        type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_X INPUT_REL_Y>;
     };
 };
