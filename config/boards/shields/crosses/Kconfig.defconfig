@@ -1,34 +1,32 @@
-# 1. システム全体でマウス機能を強制
+# 1. システム全体でマウス機能を定義
 config ZMK_MOUSE
-	default y
+    default y
 
 config ZMK_POINTING
-	default y
+    default y
 
-# 2. 【これが抜けていました】子が拾ったマウスデータを「親（主）」に転送する設定
-# これを足さないと、子が「子」である限りデータは右手に飛びません
+# 2. 【修正箇所】型(bool)を明示してエラーを回避
+# これで左手(子)のデータを右手に送るルートを確保します
 config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-	default y
+    bool
+    default y
 
-# 3. その上で左右共通の設定
+# 3. 共通設定
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
+    config ZMK_KEYBOARD_NAME
+        default "ZMK-New"
 
-config ZMK_KEYBOARD_NAME
-	default "ZMK-New"
-
-config ZMK_SPLIT
-	default y
-
+    config ZMK_SPLIT
+        default y
 endif
 
-# 4. 左手は「子」として固定
+# 4. 左手(子)と右手(親)の役割を厳格に固定
 if SHIELD_CROSSES_LEFT
-config ZMK_SPLIT_BLE_ROLE_CENTRAL
-	default n
+    config ZMK_SPLIT_BLE_ROLE_CENTRAL
+        default n
 endif
 
-# 5. 右手は「親」として固定
 if SHIELD_CROSSES_RIGHT
-config ZMK_SPLIT_BLE_ROLE_CENTRAL
-	default y
+    config ZMK_SPLIT_BLE_ROLE_CENTRAL
+        default y
 endif
