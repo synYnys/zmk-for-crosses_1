@@ -38,27 +38,3 @@
         };
     };
 };
-
-/ {
-    behaviors {
-        // トラックボールの動作を定義
-        mmv: mouse_move {
-            compatible = "zmk,behavior-mouse-move";
-            #binding-cells = <1>;
-        };
-        mwh: mouse_wheel {
-            compatible = "zmk,behavior-mouse-wheel";
-            #binding-cells = <1>;
-        };
-    };
-
-    keymap {
-        // 必要に応じてマウスキーを設定
-        mouse_layer {
-            bindings = <
-                &mmv LEFT &mmv RIGHT &mmv UP &mmv DOWN
-                &mwh UP &mwh DOWN
-            >;
-        };
-    };
-};
