@@ -1,3 +1,4 @@
-# このファイルは、ZMKに「ここにもモジュールがあるよ」と教えるためのものです
 modules:
-  - name: zmk-pmw3610-driver
+  - name: my_config
+    type: local
+    path: .
