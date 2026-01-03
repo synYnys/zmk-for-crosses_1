@@ -2,25 +2,22 @@
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_KEYBOARD_NAME
         default "ZMK-New"
-
     config ZMK_SPLIT
         default y
-
     config ZMK_MOUSE
         default y
-
     config ZMK_POINTING
         default y
 endif
 
-# 2. 【重要】エラー解消のための「型定義」
-# これがないと .conf ファイルで設定した瞬間にエラーになります
+# 2. エラーを消すための「正式な定義」
+# 名前（説明文）を付けることで、システムとの衝突を回避します
 config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-    bool
+    bool "Master-Peripheral Mouse Sync"
     default y
 
 config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
-    int
+    int "Mouse Report Interval"
     default 10
 
 # 3. 役割の固定
