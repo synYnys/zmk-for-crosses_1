@@ -1,0 +1,12 @@
+# ドライバの設定を直接定義します
+config PMW3610
+    bool "PMW3610 Driver"
+    default y
+    help
+      Enable PMW3610 mouse sensor driver.
+
+if PMW3610
+    config PMW3610_CPI
+        int "Default CPI"
+        default 1200
+endif
