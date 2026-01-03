@@ -2,11 +2,12 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: badjeff
+      url-base: https://github.com/badjeff # マウス機能を持ったエンジンの提供元
   projects:
     - name: zmk
-      remote: zmkfirmware
-      revision: main
+      remote: badjeff           # 公式(zmkfirmware)ではなくカスタム版(badjeff)を使う
+      revision: mouse-keys-3.2  # トラックボール通信に対応したバージョンを指定
       import: app/west.yml
-      
   self:
     path: config
