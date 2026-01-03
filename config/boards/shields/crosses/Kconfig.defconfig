@@ -2,28 +2,25 @@
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_KEYBOARD_NAME
         default "ZMK-New"
-
     config ZMK_SPLIT
         default y
-
     config ZMK_MOUSE
         default y
-
     config ZMK_POINTING
         default y
 endif
 
-# 2. 左手（周辺機器 / 子機）の設定
+# 2. 役割と通信の強制有効化
 if SHIELD_CROSSES_LEFT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default n
-
-    # 子機から親機へマウスデータを送るスイッチを「上書き」
+    
+    # 既存の定義に値を代入するだけにします（configやboolは書かない）
+    # これで「子機から親機へマウスを飛ばす」設定が有効になります
     config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
         default y
 endif
 
-# 3. 右手（親機）の設定
 if SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default y
