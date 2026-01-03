@@ -4,16 +4,14 @@ manifest:
       url-base: https://github.com/zmkfirmware
     - name: urob
       url-base: https://github.com/urob
-    - name: badjeff
-      url-base: https://github.com/badjeff
   projects:
     - name: zmk
       remote: urob
       revision: main
       import: app/west.yml
+    # 余計なpath指定を削除し、url指定に戻します
     - name: zmk-pmw3610-driver
-      remote: badjeff
+      url: https://github.com/badjeff/zmk-pmw3610-driver
       revision: main
-      path: modules/drivers/zmk-pmw3610-driver
   self:
     path: config
