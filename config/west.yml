@@ -1,13 +1,13 @@
 manifest:
-  remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
-    - name: urob
-      url-base: https://github.com/urob
-  projects:
-    - name: zmk
-      remote: urob                # ★ ここが重要！urobフォークを使用 ★
-      revision: main
-      import: app/west.yml
-  self:
-    path: config
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    - name: urob
+      url-base: https://github.com/urob
+  projects:
+    - name: zmk
+      remote: urob
+      revision: main
+      import: app/west.yml
+  self:
+    path: config
