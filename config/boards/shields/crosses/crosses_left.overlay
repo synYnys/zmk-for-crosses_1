@@ -18,7 +18,7 @@
 
 / {
     chosen {
-        zmk,point_device = &trackball;  // ★ この行を追加 ★
+        zmk,point_device = &trackball;  // この行を追加
     };
 };
 
@@ -55,18 +55,15 @@
         spi-max-frequency = <2000000>;
         motion-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 
-        // zephyr,axis-x と zephyr,axis-y は削除（ZMKでは不要）
-        // zephyr,axis-x = <INPUT_REL_X>;
-        // zephyr,axis-y = <INPUT_REL_Y>;
+        zephyr,axis-x = <INPUT_REL_X>;
+        zephyr,axis-y = <INPUT_REL_Y>;
     };
 };
 
-/* trackball_listener は削除 */
-/* このノードは不要なので削除します
+/* 重複を削除し、この1つにまとめます */
 / {
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
     };
 };
-*/
