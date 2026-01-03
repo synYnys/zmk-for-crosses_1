@@ -1,0 +1,5 @@
+description: Vendor prefixes
+compatible: "vnd,vendor-prefixes"
+properties:
+  pixart:
+    description: PixArt Imaging Inc.
