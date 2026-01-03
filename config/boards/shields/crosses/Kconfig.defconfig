@@ -1,32 +1,37 @@
-# 1. 共通設定
+# ============================================
+# crosses split keyboard - Kconfig.defconfig
+# ============================================
+
+# 共通設定（左右どちらでも必ず有効）
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
-    config ZMK_KEYBOARD_NAME
-        default "ZMK-New"
     config ZMK_SPLIT
-        default y
+        def_bool y
+
     config ZMK_MOUSE
-        default y
+        def_bool y
+
     config ZMK_POINTING
-        default y
+        def_bool y
 endif
 
-# 2. エラーを消すための「正式な定義」
-# 名前（説明文）を付けることで、システムとの衝突を回避します
-config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-    bool "Master-Peripheral Mouse Sync"
-    default y
-
-config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
-    int "Mouse Report Interval"
-    default 10
-
-# 3. 役割の固定
+# --------------------------------------------
+# 左（peripheral）
+# --------------------------------------------
 if SHIELD_CROSSES_LEFT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
-        default n
+        def_bool n
+
+    config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
+        def_bool y
+
+    config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
+        default 10
 endif
 
+# --------------------------------------------
+# 右（central）
+# --------------------------------------------
 if SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
-        default y
+        def_bool y
 endif
