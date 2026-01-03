@@ -21,7 +21,6 @@
         zmk,point_device = &trackball;
     };
 
-    // 入力リスナーの定義（rootレベルに配置）
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
