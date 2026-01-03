@@ -1,4 +1,4 @@
-# 共通設定
+# 1. 共通設定
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_KEYBOARD_NAME
         default "ZMK-New"
@@ -13,15 +13,17 @@ if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
         default y
 endif
 
-# 左手（子機）の設定
-if SHIELD_CROSSES_LEFT
-    # 「config」ではなく「config SHIELD_...」のブロック内で
-    # 既存のマウスパケット機能を「強制選択」します
-    # これで「型がない」というエラーも「二重定義」のエラーも出ません
-    config SHIELD_CROSSES_LEFT
-        select ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-endif
+# 2. 【重要】エラー解消のための「型定義」
+# これがないと .conf ファイルで設定した瞬間にエラーになります
+config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
+    bool
+    default y
 
+config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
+    int
+    default 10
+
+# 3. 役割の固定
 if SHIELD_CROSSES_LEFT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default n
