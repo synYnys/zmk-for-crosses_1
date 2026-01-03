@@ -1,0 +1,3 @@
+build:
+  kconfig: drivers/sensor/pmw3610/Kconfig
+  cmake: drivers/sensor/pmw3610/CMakeLists.txt
