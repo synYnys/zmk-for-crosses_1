@@ -2,7 +2,6 @@
 # crosses split keyboard - Kconfig.defconfig
 # ============================================
 
-# 共通設定（左右どちらでも必ず有効）
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT
         def_bool y
@@ -14,9 +13,9 @@ if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
         def_bool y
 endif
 
-# --------------------------------------------
+# ----------------------------
 # 左（peripheral）
-# --------------------------------------------
+# ----------------------------
 if SHIELD_CROSSES_LEFT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         def_bool n
@@ -28,9 +27,9 @@ if SHIELD_CROSSES_LEFT
         default 10
 endif
 
-# --------------------------------------------
+# ----------------------------
 # 右（central）
-# --------------------------------------------
+# ----------------------------
 if SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         def_bool y
