@@ -1,0 +1,14 @@
+config PMW3610
+    bool "PMW3610 Driver"
+    default y
+    help
+      Enable PMW3610 mouse sensor driver.
+
+if PMW3610
+    config PMW3610_CPI
+        int "Default CPI"
+        default 1200
+    config PMW3610_SMART_ALGORITHM
+        bool "Enable smart algorithm"
+        default y
+endif
