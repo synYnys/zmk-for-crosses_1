@@ -6,7 +6,6 @@ if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT
         default y
 
-    # マウス機能をシステム全体で有効化
     config ZMK_MOUSE
         default y
 
@@ -14,18 +13,18 @@ if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
         default y
 endif
 
-# 2. 左手（周辺機器 / 子機）の設定
+# 2. 左手（子機）専用の設定
 if SHIELD_CROSSES_LEFT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default n
 
-    # 【重要】エラーを出さずに子機のマウス通信を有効にする魔法の1行
-    # config ... bool と書かず、ただこの変数に y を代入します
+    # エラーの元凶だった「config ... bool」を消し、値だけを指定
+    # これで子機から親機へのマウス通信がビルドエラーなしで有効になります
     config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
         default y
 endif
 
-# 3. 右手（中央 / 親機）の設定
+# 3. 右手（親機）専用の設定
 if SHIELD_CROSSES_RIGHT
     config ZMK_SPLIT_BLE_ROLE_CENTRAL
         default y
