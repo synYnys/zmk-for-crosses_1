@@ -5,35 +5,69 @@
     chosen {
         zmk,kscan = &kscan0;
         zmk,matrix_transform = &default_transform;
-	
+        zmk,point_device = <&pmw3610>; // この行を追加
     };
 
     default_transform: keymap_transform_0 {
-		compatible = "zmk,matrix-transform";
+        compatible = "zmk,matrix-transform";
         columns = <12>;
         rows = <4>;
 
         map = <
-			RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4)               RC(0,9) RC(0,8) RC(0,7) RC(0,6) RC(0,5) 
-			RC(1,0) RC(1,1) RC(1,2) RC(1,3) RC(1,4)               RC(1,9) RC(1,8) RC(1,7) RC(1,6) RC(1,5)
-			RC(2,0) RC(2,1) RC(2,2) RC(2,3) RC(2,4)               RC(2,9) RC(2,8) RC(2,7) RC(2,6) RC(2,5)
-			                RC(3,2) RC(3,3) RC(3,4)               RC(3,9) RC(3,8) RC(3,7)           
-     >;
-};
-	
+            RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4)               RC(0,9) RC(0,8) RC(0,7) RC(0,6) RC(0,5) 
+            RC(1,0) RC(1,1) RC(1,2) RC(1,3) RC(1,4)               RC(1,9) RC(1,8) RC(1,7) RC(1,6) RC(1,5)
+            RC(2,0) RC(2,1) RC(2,2) RC(2,3) RC(2,4)               RC(2,9) RC(2,8) RC(2,7) RC(2,6) RC(2,5)
+                            RC(3,2) RC(3,3) RC(3,4)               RC(3,9) RC(3,8) RC(3,7)           
+        >;
+    };
+    
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
         label = "KSCAN";
 
         diode-direction = "row2col";
-		row-gpios
+        row-gpios
             = <&gpio0 2 GPIO_ACTIVE_HIGH>
             , <&gpio0 29 GPIO_ACTIVE_HIGH>
             , <&gpio0 31 GPIO_ACTIVE_HIGH>
-	        , <&gpio0 11 GPIO_ACTIVE_HIGH>
-	      
+            , <&gpio0 11 GPIO_ACTIVE_HIGH>
             ;
     };
- 
-};
 
+    // ★★★★ ここから下を追加 ★★★★
+    
+    // SPI設定
+    &spi0 {
+        compatible = "nordic,nrf-spim";
+        status = "okay";
+        
+        // これらのピン番号は実際の配線に合わせて調整してください
+        sck-pin = <9>;   // SCKピン
+        mosi-pin = <10>; // MOSIピン
+        miso-pin = <8>;  // MISOピン
+        cs-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>; // CSピン
+        
+        pmw3610: pmw3610@0 {
+            compatible = "pixart,pmw3610";
+            reg = <0>; // SPIデバイスのスレーブセレクト番号
+            spi-max-frequency = <2000000>; // 2MHz
+            status = "okay";
+            
+            // トラックボールの解像度設定（DPI）
+            dpi = <1000>; // 800, 1000, 1200, 1600, 2000, 2400, 3200から選択
+            
+            // 必要な場合はデバウンス時間を設定
+            // debounce-time = <1>; // ミリ秒単位
+        };
+    };
+    
+    // トラックボールの動き方向を設定（必要に応じて）
+    pmw3610_0: pmw3610_0 {
+        compatible = "zmk,pmw3610";
+        status = "okay";
+        
+        // 回転方向の調整（必要に応じて反転設定）
+        // invert-x = <0>; // 0:通常, 1:X軸反転
+        // invert-y = <0>; // 0:通常, 1:Y軸反転
+    };
+};
