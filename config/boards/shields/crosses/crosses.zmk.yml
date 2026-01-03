@@ -3,7 +3,8 @@ id: crosses
 name: Crosses
 type: shield
 url: https://github.com/Good-Great-Grand-Wonderful/crosses
-requires: [pro_micro]
+# pro_micro と nice_nano の両方をサポートする場合
+requires: [pro_micro, nice_nano]
 features:
   - keys
   - pointer
