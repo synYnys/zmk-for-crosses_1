@@ -18,7 +18,13 @@
 
 / {
     chosen {
-        zmk,point_device = &trackball;  // この行を追加
+        zmk,point_device = &trackball;
+    };
+
+    // 入力リスナーの定義（rootレベルに配置）
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
     };
 };
 
@@ -57,13 +63,5 @@
 
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
-    };
-};
-
-/* 重複を削除し、この1つにまとめます */
-/ {
-    trackball_listener {
-        compatible = "zmk,input-listener";
-        device = <&trackball>;
     };
 };
