@@ -3,34 +3,24 @@
 # ============================================
 
 if SHIELD_CROSSES_LEFT || SHIELD_CROSSES_RIGHT
-    config ZMK_SPLIT
-        def_bool y
-
-    config ZMK_MOUSE
-        def_bool y
-
-    config ZMK_POINTING
-        def_bool y
+    def_bool ZMK_SPLIT y
+    def_bool ZMK_MOUSE y
+    def_bool ZMK_POINTING y
 endif
 
 # ----------------------------
 # 左（peripheral）
 # ----------------------------
 if SHIELD_CROSSES_LEFT
-    config ZMK_SPLIT_BLE_ROLE_CENTRAL
-        def_bool n
+    def_bool ZMK_SPLIT_BLE_ROLE_CENTRAL n
 
-    config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-        def_bool y
-
-    config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
-        default 10
+    default ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE y
+    default ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL 10
 endif
 
 # ----------------------------
 # 右（central）
 # ----------------------------
 if SHIELD_CROSSES_RIGHT
-    config ZMK_SPLIT_BLE_ROLE_CENTRAL
-        def_bool y
+    def_bool ZMK_SPLIT_BLE_ROLE_CENTRAL y
 endif
