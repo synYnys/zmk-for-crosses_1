@@ -13,6 +13,6 @@ manifest:
       url: https://github.com/badjeff/zmk-pmw3610-driver
       revision: main
       # ★この2行が絶対に必要でした。復活させます★
-      path: modules/drivers/zmk-pmw3610-driver
+
   self:
     path: config
