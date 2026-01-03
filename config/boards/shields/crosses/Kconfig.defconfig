@@ -20,12 +20,11 @@ if SHIELD_CROSSES_RIGHT
         default y
 endif
 
-# 3. エラー解消の鍵：ここで「型」を定義する
-# これがないと .conf ファイルで設定しても無視されてしまいます
+# 3. エラー解消：prompt (ダブルクォーテーション) を付けて「変更可能」にする
 config ZMK_SPLIT_PERIPHERAL_HID_REPORT_TYPE_MOUSE
-    bool
+    bool "Enable mouse report from peripheral"
     default n
 
 config ZMK_SPLIT_BLE_PERIPHERAL_HID_REPORT_INTERVAL
-    int
+    int "Peripheral report interval"
     default 60
