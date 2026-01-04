@@ -114,6 +114,12 @@ static int pmw3610_channel_get(const struct device *dev, enum sensor_channel cha
     return 0;
 }
 
+/* API Structure Definition (Moved here to be visible to the macro below) */
+static const struct sensor_driver_api pmw3610_driver_api = {
+    .sample_fetch = pmw3610_sample_fetch,
+    .channel_get = pmw3610_channel_get,
+};
+
 static int pmw3610_init(const struct device *dev) {
     const struct pmw3610_config *cfg = dev->config;
     struct pmw3610_data *data = dev->data;
