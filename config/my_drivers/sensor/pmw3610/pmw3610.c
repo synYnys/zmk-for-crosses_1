@@ -5,6 +5,7 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/spi.h>
+#include <zephyr/sys/byteorder.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(pmw3610, CONFIG_SENSOR_LOG_LEVEL);
@@ -19,15 +20,17 @@ LOG_MODULE_REGISTER(pmw3610, CONFIG_SENSOR_LOG_LEVEL);
 #define PMW3610_PRODUCT_ID          0x3E
 
 struct pmw3610_data {
+    const struct device *dev;
     int16_t last_x;
     int16_t last_y;
 };
 
 struct pmw3610_config {
     struct spi_dt_spec bus;
+    struct gpio_dt_spec irq_gpio; // これを復活させました
+    uint16_t cpi;                 // これも復活させました
 };
 
-/* 3-Wire (Half-Duplex) Register Read */
 static int pmw3610_read_reg(const struct device *dev, uint8_t reg, uint8_t *val) {
     const struct pmw3610_config *cfg = dev->config;
     uint8_t addr = reg & 0x7F;
@@ -37,15 +40,13 @@ static int pmw3610_read_reg(const struct device *dev, uint8_t reg, uint8_t *val)
     struct spi_buf rx_buf = { .buf = val, .len = 1 };
     struct spi_buf_set rx = { .buffers = &rx_buf, .count = 1 };
 
-    /* 3線式の場合、書き込みの直後に読み込みを行う必要がある */
+    // 3線式 (Half Duplex) での読み込み
     return spi_transceive_dt(&cfg->bus, &tx, &rx);
 }
 
-/* 3-Wire (Half-Duplex) Register Write */
 static int pmw3610_write_reg(const struct device *dev, uint8_t reg, uint8_t val) {
     const struct pmw3610_config *cfg = dev->config;
     uint8_t buf[] = { reg | 0x80, val };
-    
     struct spi_buf tx_buf = { .buf = buf, .len = 2 };
     struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
 
@@ -54,22 +55,16 @@ static int pmw3610_write_reg(const struct device *dev, uint8_t reg, uint8_t val)
 
 static int pmw3610_sample_fetch(const struct device *dev, enum sensor_channel chan) {
     struct pmw3610_data *data = dev->data;
-    uint8_t burst_data[4]; /* Motion, DX, DY, XYH */
-    uint8_t reg = PMW3610_REG_MOTION_BURST;
-    const struct pmw3610_config *cfg = dev->config;
-
-    struct spi_buf tx_buf = { .buf = &reg, .len = 1 };
-    struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
-    struct spi_buf rx_buf = { .buf = burst_data, .len = sizeof(burst_data) };
-    struct spi_buf_set rx = { .buffers = &rx_buf, .count = 1 };
-
-    int err = spi_transceive_dt(&cfg->bus, &tx, &rx);
-    if (err) return err;
-
-    /* Bit 7 of the first byte is Motion */
-    if (burst_data[0] & 0x80) {
-        data->last_x = (int16_t)(int8_t)burst_data[1];
-        data->last_y = (int16_t)(int8_t)burst_data[2];
+    uint8_t motion, xl, yl;
+    
+    // バースト読み出しではなく、確実に動く単発読み出しを使用
+    pmw3610_read_reg(dev, PMW3610_REG_MOTION, &motion);
+    
+    if (motion & 0x80) {
+        pmw3610_read_reg(dev, PMW3610_REG_DELTA_X_L, &xl);
+        pmw3610_read_reg(dev, PMW3610_REG_DELTA_Y_L, &yl);
+        data->last_x = (int16_t)(int8_t)xl;
+        data->last_y = (int16_t)(int8_t)yl;
     } else {
         data->last_x = 0;
         data->last_y = 0;
@@ -82,13 +77,12 @@ static int pmw3610_channel_get(const struct device *dev, enum sensor_channel cha
     struct pmw3610_data *data = dev->data;
     if (chan == SENSOR_CHAN_POS_DX) {
         val->val1 = data->last_x;
-        val->val2 = 0;
     } else if (chan == SENSOR_CHAN_POS_DY) {
         val->val1 = data->last_y;
-        val->val2 = 0;
     } else {
         return -ENOTSUP;
     }
+    val->val2 = 0;
     return 0;
 }
 
@@ -106,20 +100,19 @@ static int pmw3610_init(const struct device *dev) {
         return -ENODEV;
     }
 
-    /* 起動時のリセット */
+    /* Reset */
     pmw3610_write_reg(dev, PMW3610_REG_POWER_UP_RESET, 0x5A);
-    k_msleep(50);
+    k_msleep(50); // リセット後の待ち時間を十分に取る
 
-    /* IDチェック */
+    /* Chip ID check */
     pmw3610_read_reg(dev, PMW3610_REG_PRODUCT_ID, &chip_id);
     if (chip_id != PMW3610_PRODUCT_ID) {
-        LOG_WRN("ID Mismatch: 0x%x", chip_id);
+        LOG_WRN("PMW3610 ID mismatch: 0x%02x", chip_id);
+        // IDが違っても動作を試みる
     }
-
+    
     return 0;
 }
-
-/* ... 上の部分はそのまま ... */
 
 #define PMW3610_DEFINE(inst)                                            \
     static struct pmw3610_data pmw3610_data_##inst;                     \
