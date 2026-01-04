@@ -17,13 +17,7 @@ LOG_MODULE_REGISTER(pmw3610, CONFIG_SENSOR_LOG_LEVEL);
 #define PMW3610_REG_DELTA_X_L       0x03
 #define PMW3610_REG_DELTA_Y_L       0x04
 #define PMW3610_REG_DELTA_XY_H      0x05
-#define PMW3610_REG_CONFIG1         0x0F
-#define PMW3610_REG_PERFORMANCE     0x11
-#define PMW3610_REG_OBSERVATION     0x15
 #define PMW3610_REG_MOTION_BURST    0x16
-#define PMW3610_REG_POWER_UP_RESET  0x3A
-#define PMW3610_REG_SHUTDOWN        0x3B
-#define PMW3610_REG_RES_STEP        0x8D
 
 #define PMW3610_PRODUCT_ID          0x3E
 
@@ -41,6 +35,7 @@ struct pmw3610_config {
     uint16_t cpi;
 };
 
+/* SPI Read/Write Wrappers */
 static int pmw3610_read_reg(const struct device *dev, uint8_t reg, uint8_t *val) {
     const struct pmw3610_config *cfg = dev->config;
     uint8_t tx_buf[] = { reg & 0x7F };
@@ -68,30 +63,61 @@ static int pmw3610_write_reg(const struct device *dev, uint8_t reg, uint8_t val)
     return spi_write_dt(&cfg->bus, &tx_set);
 }
 
+/* Burst Read Function */
+static int pmw3610_burst_read(const struct device *dev, uint8_t *buf, size_t len) {
+    const struct pmw3610_config *cfg = dev->config;
+    uint8_t reg = PMW3610_REG_MOTION_BURST & 0x7F;
+    
+    const struct spi_buf tx = { .buf = &reg, .len = 1 };
+    const struct spi_buf_set tx_set = { .buffers = &tx, .count = 1 };
+    
+    /* Buffer to receive: 1 byte dummy (address phase) + data */
+    const struct spi_buf rx = { .buf = buf, .len = len };
+    const struct spi_buf_set rx_set = { .buffers = &rx, .count = 1 };
+
+    return spi_transceive_dt(&cfg->bus, &tx_set, &rx_set);
+}
+
 static int pmw3610_sample_fetch(const struct device *dev, enum sensor_channel chan) {
     struct pmw3610_data *data = dev->data;
+    /* * Burst buffer:
+     * [0]: Reg Addr (during TX) / Dummy (during RX)
+     * [1]: Motion
+     * [2]: Delta_X_L
+     * [3]: Delta_Y_L
+     * [4]: Delta_XY_H
+     * [5]: SQUAL
+     * [6]: Shutter_H
+     * [7]: Shutter_L
+     * [8]: Pix_Max
+     * [9]: Pix_Avg
+     * [10]: Pix_Min
+     */
+    uint8_t burst_data[11] = {0};
     int err;
-    uint8_t motion_reg, xl, yl;
 
-    /* Read Motion Status */
-    err = pmw3610_read_reg(dev, PMW3610_REG_MOTION, &motion_reg);
-    if (err) return err;
-
-    /* Check if motion occurred (Bit 7 set) */
-    if (!(motion_reg & 0x80)) {
-        data->last_x = 0;
-        data->last_y = 0;
-        return 0;
+    /* Write address and read burst data */
+    err = pmw3610_burst_read(dev, burst_data, sizeof(burst_data));
+    if (err) {
+        LOG_ERR("Burst read failed");
+        return err;
     }
 
-    /* Read Delta registers */
-    pmw3610_read_reg(dev, PMW3610_REG_DELTA_X_L, &xl);
-    pmw3610_read_reg(dev, PMW3610_REG_DELTA_Y_L, &yl);
+    uint8_t motion = burst_data[1];
     
-    /* Convert to signed 8-bit */
-    data->last_x = (int8_t)xl;
-    data->last_y = (int8_t)yl;
-    
+    /* Check Motion bit (Bit 7) */
+    if (motion & 0x80) {
+        uint8_t xl = burst_data[2];
+        uint8_t yl = burst_data[3];
+        // uint8_t xyh = burst_data[4]; // Optional high bits
+
+        data->last_x = (int16_t)(int8_t)xl;
+        data->last_y = (int16_t)(int8_t)yl;
+    } else {
+        data->last_x = 0;
+        data->last_y = 0;
+    }
+
     return 0;
 }
 
@@ -114,7 +140,7 @@ static int pmw3610_channel_get(const struct device *dev, enum sensor_channel cha
     return 0;
 }
 
-/* API Structure Definition (Moved here to be visible to the macro below) */
+/* API Structure Definition */
 static const struct sensor_driver_api pmw3610_driver_api = {
     .sample_fetch = pmw3610_sample_fetch,
     .channel_get = pmw3610_channel_get,
@@ -133,28 +159,29 @@ static int pmw3610_init(const struct device *dev) {
         return -ENODEV;
     }
 
-    /* Hardware Reset Sequence */
-    /* 1. Power Up Reset */
-    pmw3610_write_reg(dev, PMW3610_REG_POWER_UP_RESET, 0x5A);
+    /* Reset Sensor */
+    pmw3610_write_reg(dev, 0x3A, 0x5A);
     k_sleep(K_MSEC(20));
 
-    /* 2. Read Chip ID to verify connection */
-    err = pmw3610_read_reg(dev, PMW3610_REG_PRODUCT_ID, &chip_id);
-    if (err) {
-        LOG_ERR("Failed to read chip ID");
-        return err;
-    }
+    /* Verify Chip ID */
+    err = pmw3610_read_reg(dev, 0x00, &chip_id);
+    if (err) return err;
 
     if (chip_id != PMW3610_PRODUCT_ID) {
-        LOG_ERR("Invalid chip ID: 0x%02x (expected 0x%02x)", chip_id, PMW3610_PRODUCT_ID);
+        LOG_ERR("PMW3610 not found! ID: %02x", chip_id);
+        /* 注意: ここで return -ENODEV; するとキーボード自体が起動しないことがあります。
+           配線ミスの場合でもキーボード機能だけは動くように、エラーでも続行させます。
+        */
     } else {
-        LOG_INF("PMW3610 detected (ID: 0x%02x)", chip_id);
+        LOG_INF("PMW3610 OK (ID: %02x)", chip_id);
     }
+    
+    /* Force Awake */
+    pmw3610_write_reg(dev, 0x3B, 0x00); 
 
     return 0;
 }
 
-/* Device Instantiation */
 #define PMW3610_DEFINE(inst)                                            \
     static struct pmw3610_data pmw3610_data_##inst;                     \
     static const struct pmw3610_config pmw3610_config_##inst = {        \
