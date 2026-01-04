@@ -30,14 +30,14 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-                    <NRF_PSEL(SPIM_MISO, 0, 22)>; /* ここを 22 に */
+                    <NRF_PSEL(SPIM_MISO, 0, 20)>; /* ここを 22 に */
         };
     };
     spi0_sleep: spi0_sleep {
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>,
-                    <NRF_PSEL(SPIM_MISO, 0, 22)>; /* ここも 22 に */
+                    <NRF_PSEL(SPIM_MISO, 0, 20)>; /* ここも 22 に */
             low-power-enable;
         };
     };
