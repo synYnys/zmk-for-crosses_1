@@ -2,9 +2,10 @@ description: PixArt PMW3610 optical mouse sensor
 
 compatible: "pixart,pmw3610"
 
-include: 
+include:
   - sensor-device.yaml
   - spi-device.yaml
+  - input-device.yaml
 
 on-bus: spi
 
