@@ -119,10 +119,14 @@ static int pmw3610_init(const struct device *dev) {
     return 0;
 }
 
+/* ... 上の部分はそのまま ... */
+
 #define PMW3610_DEFINE(inst)                                            \
     static struct pmw3610_data pmw3610_data_##inst;                     \
     static const struct pmw3610_config pmw3610_config_##inst = {        \
-        .bus = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_HALF_DUPLEX, 0), \
+        .bus = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_HALF_DUPLEX, 0), \
+        .irq_gpio = GPIO_DT_SPEC_INST_GET_OR(inst, motion_gpios, {0}), \
+        .cpi = 1200,                                                    \
     };                                                                  \
     SENSOR_DEVICE_DT_INST_DEFINE(inst, pmw3610_init, NULL,              \
                                  &pmw3610_data_##inst,                  \
