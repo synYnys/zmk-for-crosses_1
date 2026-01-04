@@ -1,0 +1,13 @@
+description: PixArt PMW3610 optical mouse sensor
+
+compatible: "pixart,pmw3610"
+
+include: sensor-device.yaml
+
+on-bus: spi
+
+properties:
+    motion-gpios:
+      type: phandle-array
+      required: true
+      description: Motion interrupt GPIO pin
