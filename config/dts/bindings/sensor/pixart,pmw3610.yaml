@@ -1,4 +1,4 @@
-description: PixArt PMW3610 optical mouse sensor
+description: "PixArt PMW3610 optical mouse sensor"
 
 compatible: "pixart,pmw3610"
 
@@ -10,16 +10,16 @@ properties:
     motion-gpios:
       type: phandle-array
       required: true
-      description: Motion interrupt GPIO pin
+      description: "Motion interrupt GPIO pin"
       
     "zephyr,axis-x":
       type: int
       required: false
       default: 0
-      description: Axis X mapping (0: X, 1: Y, etc)
+      description: "Axis X mapping (0: X, 1: Y, etc)"
 
     "zephyr,axis-y":
       type: int
       required: false
       default: 1
-      description: Axis Y mapping
+      description: "Axis Y mapping"
