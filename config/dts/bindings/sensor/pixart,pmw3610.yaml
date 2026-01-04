@@ -2,10 +2,7 @@ description: PixArt PMW3610 optical mouse sensor
 
 compatible: "pixart,pmw3610"
 
-include:
-  - sensor-device.yaml
-  - spi-device.yaml
-  - input-device.yaml
+include: spi-device.yaml
 
 on-bus: spi
 
@@ -14,3 +11,15 @@ properties:
       type: phandle-array
       required: true
       description: Motion interrupt GPIO pin
+      
+    "zephyr,axis-x":
+      type: int
+      required: false
+      default: 0
+      description: Axis X mapping (0: X, 1: Y, etc)
+
+    "zephyr,axis-y":
+      type: int
+      required: false
+      default: 1
+      description: Axis Y mapping
