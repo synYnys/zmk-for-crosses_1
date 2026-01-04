@@ -70,9 +70,8 @@ static int pmw3610_write_reg(const struct device *dev, uint8_t reg, uint8_t val)
 
 static int pmw3610_sample_fetch(const struct device *dev, enum sensor_channel chan) {
     struct pmw3610_data *data = dev->data;
-    const struct pmw3610_config *cfg = dev->config;
     int err;
-    uint8_t motion_reg, xl, yl, xyh;
+    uint8_t motion_reg, xl, yl;
 
     /* Read Motion Status */
     err = pmw3610_read_reg(dev, PMW3610_REG_MOTION, &motion_reg);
@@ -89,14 +88,9 @@ static int pmw3610_sample_fetch(const struct device *dev, enum sensor_channel ch
     pmw3610_read_reg(dev, PMW3610_REG_DELTA_X_L, &xl);
     pmw3610_read_reg(dev, PMW3610_REG_DELTA_Y_L, &yl);
     
-    /* Optional: High bits for larger movements (if needed, simplified for now) */
-    // pmw3610_read_reg(dev, PMW3610_REG_DELTA_XY_H, &xyh); 
-
-    /* Convert to signed 8-bit (simple implementation) */
+    /* Convert to signed 8-bit */
     data->last_x = (int8_t)xl;
     data->last_y = (int8_t)yl;
-
-    /* Re-enable interrupts if using edge triggering? Not needed for polling loop. */
     
     return 0;
 }
@@ -106,11 +100,11 @@ static int pmw3610_channel_get(const struct device *dev, enum sensor_channel cha
     struct pmw3610_data *data = dev->data;
 
     switch (chan) {
-    case SENSOR_CHAN_REL_X:
+    case SENSOR_CHAN_POS_DX:
         val->val1 = data->last_x;
         val->val2 = 0;
         break;
-    case SENSOR_CHAN_REL_Y:
+    case SENSOR_CHAN_POS_DY:
         val->val1 = data->last_y;
         val->val2 = 0;
         break;
@@ -147,16 +141,10 @@ static int pmw3610_init(const struct device *dev) {
 
     if (chip_id != PMW3610_PRODUCT_ID) {
         LOG_ERR("Invalid chip ID: 0x%02x (expected 0x%02x)", chip_id, PMW3610_PRODUCT_ID);
-        // Continue anyway to avoid bricking, but log error
     } else {
         LOG_INF("PMW3610 detected (ID: 0x%02x)", chip_id);
     }
 
-    /* 3. Set CPI if config says so */
-    /* Not implemented in this basic version, uses default 1200 CPI */
-
-    /* 4. Configure GPIO interrupt if configured (Skipped for polling mode) */
-    
     return 0;
 }
 
@@ -174,10 +162,5 @@ static int pmw3610_init(const struct device *dev) {
                                  POST_KERNEL,                           \
                                  CONFIG_SENSOR_INIT_PRIORITY,           \
                                  &pmw3610_driver_api);
-
-static const struct sensor_driver_api pmw3610_driver_api = {
-    .sample_fetch = pmw3610_sample_fetch,
-    .channel_get = pmw3610_channel_get,
-};
 
 DT_INST_FOREACH_STATUS_OKAY(PMW3610_DEFINE)
