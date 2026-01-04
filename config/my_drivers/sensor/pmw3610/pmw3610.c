@@ -10,60 +10,55 @@
 
 LOG_MODULE_REGISTER(pmw3610, CONFIG_SENSOR_LOG_LEVEL);
 
+/* Registers */
 #define PMW3610_REG_PRODUCT_ID      0x00
-#define PMW3610_REG_REVISION_ID     0x01
 #define PMW3610_REG_MOTION          0x02
 #define PMW3610_REG_DELTA_X_L       0x03
 #define PMW3610_REG_DELTA_Y_L       0x04
-#define PMW3610_REG_DELTA_XY_H      0x05
-#define PMW3610_REG_MOTION_BURST    0x16
 #define PMW3610_REG_POWER_UP_RESET  0x3A
-
 #define PMW3610_PRODUCT_ID          0x3E
 
 struct pmw3610_data {
     const struct device *dev;
+    struct gpio_callback gpio_cb;
+    struct k_work work;
+    sensor_trigger_handler_t data_ready_handler;
+    const struct sensor_trigger *data_ready_trigger;
     int16_t last_x;
     int16_t last_y;
 };
 
-/* 【重要】ここがエラーの原因でした。定義を復活させました。 */
 struct pmw3610_config {
     struct spi_dt_spec bus;
-    struct gpio_dt_spec irq_gpio; 
+    struct gpio_dt_spec irq_gpio;
     uint16_t cpi;
 };
 
 static int pmw3610_read_reg(const struct device *dev, uint8_t reg, uint8_t *val) {
     const struct pmw3610_config *cfg = dev->config;
     uint8_t addr = reg & 0x7F;
-    
-    struct spi_buf tx_buf = { .buf = &addr, .len = 1 };
-    struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
-    
+    const struct spi_buf tx_buf = { .buf = &addr, .len = 1 };
+    const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
     struct spi_buf rx_buf = { .buf = val, .len = 1 };
     struct spi_buf_set rx = { .buffers = &rx_buf, .count = 1 };
-
-    // 3線式 (Half Duplex) での読み込み
     return spi_transceive_dt(&cfg->bus, &tx, &rx);
 }
 
 static int pmw3610_write_reg(const struct device *dev, uint8_t reg, uint8_t val) {
     const struct pmw3610_config *cfg = dev->config;
     uint8_t buf[] = { reg | 0x80, val };
-    struct spi_buf tx_buf = { .buf = buf, .len = 2 };
-    struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
-
+    const struct spi_buf tx_buf = { .buf = buf, .len = 2 };
+    const struct spi_buf_set tx = { .buffers = &tx_buf, .count = 1 };
     return spi_write_dt(&cfg->bus, &tx);
 }
 
 static int pmw3610_sample_fetch(const struct device *dev, enum sensor_channel chan) {
     struct pmw3610_data *data = dev->data;
     uint8_t motion, xl, yl;
-    
-    // 確実に動く単発読み出し方式
-    pmw3610_read_reg(dev, PMW3610_REG_MOTION, &motion);
-    
+
+    int err = pmw3610_read_reg(dev, PMW3610_REG_MOTION, &motion);
+    if (err) return err;
+
     if (motion & 0x80) {
         pmw3610_read_reg(dev, PMW3610_REG_DELTA_X_L, &xl);
         pmw3610_read_reg(dev, PMW3610_REG_DELTA_Y_L, &yl);
@@ -90,40 +85,82 @@ static int pmw3610_channel_get(const struct device *dev, enum sensor_channel cha
     return 0;
 }
 
-/* API定義を先に書くことで undeclared エラーを防ぐ */
+static void pmw3610_work_cb(struct k_work *work) {
+    struct pmw3610_data *data = CONTAINER_OF(work, struct pmw3610_data, work);
+    const struct device *dev = data->dev;
+
+    if (data->data_ready_handler) {
+        data->data_ready_handler(dev, data->data_ready_trigger);
+    }
+}
+
+static void pmw3610_gpio_callback(const struct device *port, struct gpio_callback *cb, uint32_t pins) {
+    struct pmw3610_data *data = CONTAINER_OF(cb, struct pmw3610_data, gpio_cb);
+    k_work_submit(&data->work);
+}
+
+static int pmw3610_trigger_set(const struct device *dev,
+                               const struct sensor_trigger *trig,
+                               sensor_trigger_handler_t handler) {
+    struct pmw3610_data *data = dev->data;
+    const struct pmw3610_config *cfg = dev->config;
+
+    if (trig->type != SENSOR_TRIG_DATA_READY) {
+        return -ENOTSUP;
+    }
+
+    data->data_ready_handler = handler;
+    data->data_ready_trigger = trig;
+
+    gpio_pin_interrupt_configure_dt(&cfg->irq_gpio, GPIO_INT_EDGE_TO_ACTIVE);
+
+    return 0;
+}
+
 static const struct sensor_driver_api pmw3610_driver_api = {
     .sample_fetch = pmw3610_sample_fetch,
     .channel_get = pmw3610_channel_get,
+    .trigger_set = pmw3610_trigger_set,
 };
 
 static int pmw3610_init(const struct device *dev) {
     const struct pmw3610_config *cfg = dev->config;
+    struct pmw3610_data *data = dev->data;
     uint8_t chip_id;
 
+    data->dev = dev;
+
     if (!spi_is_ready_dt(&cfg->bus)) {
-        LOG_ERR("SPI bus not ready");
+        LOG_ERR("SPI not ready");
         return -ENODEV;
     }
 
-    /* Reset */
+    if (!gpio_is_ready_dt(&cfg->irq_gpio)) {
+        LOG_ERR("GPIO not ready");
+        return -ENODEV;
+    }
+
+    gpio_pin_configure_dt(&cfg->irq_gpio, GPIO_INPUT);
+    gpio_init_callback(&data->gpio_cb, pmw3610_gpio_callback, BIT(cfg->irq_gpio.pin));
+    gpio_add_callback(cfg->irq_gpio.port, &data->gpio_cb);
+    k_work_init(&data->work, pmw3610_work_cb);
+
     pmw3610_write_reg(dev, PMW3610_REG_POWER_UP_RESET, 0x5A);
     k_msleep(50);
 
-    /* Chip ID check */
     pmw3610_read_reg(dev, PMW3610_REG_PRODUCT_ID, &chip_id);
     if (chip_id != PMW3610_PRODUCT_ID) {
-        LOG_WRN("PMW3610 ID mismatch: 0x%02x", chip_id);
+        LOG_WRN("ID mismatch: 0x%02x", chip_id);
     } else {
         LOG_INF("PMW3610 Detected");
     }
-    
+
     return 0;
 }
 
 #define PMW3610_DEFINE(inst)                                            \
     static struct pmw3610_data pmw3610_data_##inst;                     \
     static const struct pmw3610_config pmw3610_config_##inst = {        \
-        /* 通信モード(Mode 3)と3線式(Half Duplex)を正しく指定 */            \
         .bus = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_HALF_DUPLEX, 0), \
         .irq_gpio = GPIO_DT_SPEC_INST_GET_OR(inst, motion_gpios, {0}), \
         .cpi = 1200,                                                    \
